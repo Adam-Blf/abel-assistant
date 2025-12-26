@@ -1,0 +1,3 @@
+# A.B.E.L - Initialisation...
+
+> Clean slate - Projet en cours de construction
