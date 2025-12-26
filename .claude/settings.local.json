@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(del \"C:\\\\Users\\\\adamb\\\\Documents\\\\GHT\\\\build.bat\")",
+      "Bash(python build.py:*)",
+      "Bash(python -m PyInstaller:*)",
+      "Bash(git add:*)"
+    ]
+  }
+}
