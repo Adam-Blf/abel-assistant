@@ -9,6 +9,9 @@ from app.api.chat import router as chat_router
 from app.api.voice import router as voice_router
 from app.api.memory import router as memory_router
 from app.api.websocket import router as ws_router
+from app.api.entertainment import router as entertainment_router
+from app.api.finance import router as finance_router
+from app.api.utilities import router as utilities_router
 
 api_router = APIRouter()
 
@@ -18,3 +21,8 @@ api_router.include_router(chat_router, prefix="/chat", tags=["Chat"])
 api_router.include_router(voice_router, prefix="/voice", tags=["Voice"])
 api_router.include_router(memory_router, prefix="/memory", tags=["Memory"])
 api_router.include_router(ws_router, prefix="/ws", tags=["WebSocket"])
+
+# New API routes
+api_router.include_router(entertainment_router)
+api_router.include_router(finance_router)
+api_router.include_router(utilities_router)
