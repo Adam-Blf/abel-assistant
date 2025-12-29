@@ -2,6 +2,7 @@
 A.B.E.L - Instagram Client (via instagrapi)
 """
 
+import json
 from typing import Optional, List, Dict, Any
 from datetime import datetime
 from pathlib import Path
@@ -38,10 +39,12 @@ class InstagramClient:
 
         if session_data:
             try:
-                self.client.set_settings(eval(session_data))
+                # SECURITE: Utiliser json.loads() au lieu de eval()
+                settings_dict = json.loads(session_data)
+                self.client.set_settings(settings_dict)
                 self._logged_in = True
-            except Exception:
-                pass
+            except (json.JSONDecodeError, Exception) as e:
+                logger.warning(f"Failed to load Instagram session: {e}")
 
     async def login(self) -> bool:
         """
@@ -68,8 +71,8 @@ class InstagramClient:
             return False
 
     def get_session_data(self) -> str:
-        """Get session data for persistence."""
-        return str(self.client.get_settings())
+        """Get session data for persistence (JSON format)."""
+        return json.dumps(self.client.get_settings())
 
     async def get_direct_threads(
         self,

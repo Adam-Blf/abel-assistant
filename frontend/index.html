@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A.B.E.L - Interface</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Scan Lines Overlay -->
+    <div class="scanlines"></div>
+
+    <!-- Background Grid -->
+    <div class="grid-bg"></div>
+
+    <!-- Main Container -->
+    <div class="container">
+
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <div class="arc-reactor">
+                    <div class="reactor-core"></div>
+                    <div class="reactor-ring ring-1"></div>
+                    <div class="reactor-ring ring-2"></div>
+                    <div class="reactor-ring ring-3"></div>
+                </div>
+                <div class="logo-text">
+                    <span class="logo-main">A.B.E.L</span>
+                    <span class="logo-sub">Autonomous Backend Entity for Living</span>
+                </div>
+            </div>
+            <div class="status-bar">
+                <div class="status-item" id="status-backend">
+                    <span class="status-dot"></span>
+                    <span class="status-label">BACKEND</span>
+                </div>
+                <div class="status-item" id="status-ollama">
+                    <span class="status-dot"></span>
+                    <span class="status-label">OLLAMA</span>
+                </div>
+                <div class="status-item" id="status-db">
+                    <span class="status-dot"></span>
+                    <span class="status-label">DATABASE</span>
+                </div>
+                <div class="time-display" id="time-display">--:--:--</div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+
+            <!-- Left Panel - Services -->
+            <aside class="panel panel-left">
+                <div class="panel-header">
+                    <span class="panel-title">SERVICES</span>
+                    <div class="panel-corner tl"></div>
+                    <div class="panel-corner tr"></div>
+                </div>
+                <div class="services-grid">
+                    <button class="service-btn" data-service="weather" onclick="quickAction('weather')">
+                        <div class="service-icon">🌤️</div>
+                        <span>METEO</span>
+                    </button>
+                    <button class="service-btn" data-service="crypto" onclick="quickAction('crypto')">
+                        <div class="service-icon">₿</div>
+                        <span>CRYPTO</span>
+                    </button>
+                    <button class="service-btn" data-service="news" onclick="quickAction('news')">
+                        <div class="service-icon">📰</div>
+                        <span>NEWS</span>
+                    </button>
+                    <button class="service-btn" data-service="music" onclick="quickAction('music')">
+                        <div class="service-icon">🎵</div>
+                        <span>MUSIQUE</span>
+                    </button>
+                    <button class="service-btn" data-service="movies" onclick="quickAction('movies')">
+                        <div class="service-icon">🎬</div>
+                        <span>FILMS</span>
+                    </button>
+                    <button class="service-btn" data-service="translate" onclick="quickAction('translate')">
+                        <div class="service-icon">🌐</div>
+                        <span>TRADUIRE</span>
+                    </button>
+                </div>
+                <div class="panel-footer">
+                    <div class="panel-corner bl"></div>
+                    <div class="panel-corner br"></div>
+                </div>
+            </aside>
+
+            <!-- Center - Chat -->
+            <section class="chat-section">
+                <div class="chat-container">
+                    <div class="chat-header">
+                        <span class="chat-title">COMMUNICATION INTERFACE</span>
+                        <div class="chat-controls">
+                            <button class="control-btn" id="btn-clear" onclick="clearChat()">CLEAR</button>
+                        </div>
+                    </div>
+                    <div class="chat-messages" id="chat-messages">
+                        <div class="message system">
+                            <div class="message-content">
+                                <span class="message-sender">SYSTEM</span>
+                                <p>A.B.E.L initialized. All systems operational.</p>
+                                <p class="message-hint">Type a message or use voice input to begin.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chat-input-container">
+                        <div class="input-wrapper">
+                            <input type="text" id="chat-input" placeholder="Enter command..." autocomplete="off">
+                            <div class="input-border"></div>
+                        </div>
+                        <button class="voice-btn" id="voice-btn" onclick="toggleVoice()">
+                            <div class="voice-icon">
+                                <div class="mic-body"></div>
+                                <div class="mic-stand"></div>
+                            </div>
+                            <div class="voice-waves">
+                                <span></span><span></span><span></span>
+                            </div>
+                        </button>
+                        <button class="send-btn" id="send-btn" onclick="sendMessage()">
+                            <span>SEND</span>
+                            <div class="send-arrow"></div>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Panel - Info -->
+            <aside class="panel panel-right">
+                <div class="panel-header">
+                    <span class="panel-title">SYSTEM INFO</span>
+                    <div class="panel-corner tl"></div>
+                    <div class="panel-corner tr"></div>
+                </div>
+                <div class="info-content">
+                    <div class="info-item">
+                        <span class="info-label">MODE</span>
+                        <span class="info-value" id="info-mode">HYBRID</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">LLM</span>
+                        <span class="info-value" id="info-llm">QWEN2.5</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">LATENCY</span>
+                        <span class="info-value" id="info-latency">--ms</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">UPTIME</span>
+                        <span class="info-value" id="info-uptime">00:00:00</span>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <div class="quick-stats">
+                        <div class="stat">
+                            <span class="stat-value" id="stat-messages">0</span>
+                            <span class="stat-label">MESSAGES</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-value" id="stat-tokens">0</span>
+                            <span class="stat-label">TOKENS</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <div class="panel-corner bl"></div>
+                    <div class="panel-corner br"></div>
+                </div>
+            </aside>
+
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-left">
+                <span class="version">v2.0.0</span>
+                <span class="separator">|</span>
+                <span class="api-url" id="api-url">http://127.0.0.1:8080</span>
+            </div>
+            <div class="footer-center">
+                <div class="audio-visualizer" id="audio-visualizer">
+                    <span></span><span></span><span></span><span></span><span></span>
+                    <span></span><span></span><span></span><span></span><span></span>
+                </div>
+            </div>
+            <div class="footer-right">
+                <span class="copyright">OPEN SOURCE & LOCAL FIRST</span>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="loading-content">
+            <div class="loading-reactor">
+                <div class="reactor-core"></div>
+                <div class="reactor-ring ring-1"></div>
+                <div class="reactor-ring ring-2"></div>
+                <div class="reactor-ring ring-3"></div>
+            </div>
+            <div class="loading-text">INITIALIZING A.B.E.L...</div>
+            <div class="loading-bar">
+                <div class="loading-progress"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

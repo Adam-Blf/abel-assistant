@@ -89,7 +89,7 @@ async def speech_to_text(
         raise
     except Exception as e:
         logger.error(f"Transcription error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="An error occurred")
 
 
 @router.post("/speak")
@@ -126,7 +126,7 @@ async def text_to_speech(request: TextToSpeechRequest):
 
     except Exception as e:
         logger.error(f"TTS error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="An error occurred")
 
 
 @router.post("/speak/base64", response_model=TTSResponse)
@@ -156,7 +156,7 @@ async def text_to_speech_base64(request: TextToSpeechRequest):
 
     except Exception as e:
         logger.error(f"TTS base64 error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="An error occurred")
 
 
 @router.get("/voices")
@@ -168,7 +168,7 @@ async def list_voices():
         return {"voices": voices}
     except Exception as e:
         logger.error(f"Error listing voices: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="An error occurred")
 
 
 @router.post("/conversation")
@@ -233,4 +233,4 @@ async def voice_conversation(
 
     except Exception as e:
         logger.error(f"Voice conversation error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="An error occurred")

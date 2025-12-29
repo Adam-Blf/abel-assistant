@@ -77,7 +77,7 @@ async def store_memory(request: StoreMemoryRequest):
 
     except Exception as e:
         logger.error(f"Error storing memory: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="An error occurred")
 
 
 @router.post("/search", response_model=List[MemoryResponse])
@@ -112,7 +112,7 @@ async def search_memories(request: SearchMemoryRequest):
 
     except Exception as e:
         logger.error(f"Error searching memories: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="An error occurred")
 
 
 @router.get("/recall")
@@ -127,7 +127,7 @@ async def quick_recall(
         return {"query": query, "results": results, "count": len(results)}
     except Exception as e:
         logger.error(f"Error in quick recall: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="An error occurred")
 
 
 @router.delete("/{memory_id}")
@@ -146,7 +146,7 @@ async def delete_memory(memory_id: str):
         raise
     except Exception as e:
         logger.error(f"Error deleting memory: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="An error occurred")
 
 
 @router.get("/stats")
@@ -158,7 +158,7 @@ async def memory_stats():
         return stats
     except Exception as e:
         logger.error(f"Error getting memory stats: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="An error occurred")
 
 
 @router.post("/bulk-store")
@@ -186,7 +186,7 @@ async def bulk_store_memories(memories: List[StoreMemoryRequest]):
 
     except Exception as e:
         logger.error(f"Error in bulk store: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="An error occurred")
 
 
 @router.post("/clear")
@@ -208,4 +208,4 @@ async def clear_all_memories(confirm: bool = Query(default=False)):
         return {"status": "cleared", "message": "All memories have been deleted"}
     except Exception as e:
         logger.error(f"Error clearing memories: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="An error occurred")

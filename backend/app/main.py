@@ -13,6 +13,7 @@ from app.core.config import settings
 from app.core.logging import logger
 from app.core.database import init_db
 from app.core.redis import redis_client
+from app.core.security import add_security_headers
 from app.api import api_router
 
 
@@ -51,9 +52,9 @@ app = FastAPI(
     title=settings.app_name,
     description="Autonomous Backend Entity for Living - Your Personal AI Assistant",
     version="1.0.0",
-    docs_url="/docs",
-    redoc_url="/redoc",
-    openapi_url="/openapi.json",
+    docs_url="/docs" if not settings.is_production else None,
+    redoc_url="/redoc" if not settings.is_production else None,
+    openapi_url="/openapi.json" if not settings.is_production else None,
     lifespan=lifespan,
 )
 
@@ -66,6 +67,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Security headers middleware
+app.middleware("http")(add_security_headers)
+
 
 # Global exception handler
 @app.exception_handler(Exception)
@@ -76,7 +80,7 @@ async def global_exception_handler(request: Request, exc: Exception):
         status_code=500,
         content={
             "error": "Internal server error",
-            "detail": str(exc) if settings.debug else "An unexpected error occurred",
+            "detail": "An unexpected error occurred",
             "timestamp": datetime.utcnow().isoformat(),
         },
     )

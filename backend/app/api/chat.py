@@ -94,7 +94,7 @@ async def chat(
 
     except Exception as e:
         logger.error(f"Chat error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="An error occurred")
 
 
 @router.get("/conversations", response_model=List[ConversationSummary])
@@ -110,7 +110,7 @@ async def list_conversations(
         return conversations
     except Exception as e:
         logger.error(f"Error listing conversations: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="An error occurred")
 
 
 @router.get("/conversations/{conversation_id}")
@@ -129,7 +129,7 @@ async def get_conversation(
         raise
     except Exception as e:
         logger.error(f"Error getting conversation: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="An error occurred")
 
 
 @router.delete("/conversations/{conversation_id}")
@@ -148,7 +148,7 @@ async def delete_conversation(
         raise
     except Exception as e:
         logger.error(f"Error deleting conversation: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="An error occurred")
 
 
 @router.post("/quick")
@@ -186,4 +186,4 @@ async def quick_chat(message: str):
 
     except Exception as e:
         logger.error(f"Quick chat error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="An error occurred")

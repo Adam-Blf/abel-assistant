@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A.B.E.L // SYSTEM INTERFACE</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Animated background -->
+    <div class="bg-grid"></div>
+    <div class="bg-glow"></div>
+    <div class="scan-line"></div>
+
+    <!-- Custom window controls -->
+    <div class="window-controls" data-tauri-drag-region>
+        <div class="control-left">
+            <span class="sys-id">SYS://ABEL.2.0</span>
+        </div>
+        <div class="control-right">
+            <button class="win-btn minimize" onclick="minimizeWindow()">─</button>
+            <button class="win-btn close" onclick="closeWindow()">×</button>
+        </div>
+    </div>
+
+    <!-- Main container -->
+    <div class="container" data-tauri-drag-region>
+        <!-- Header -->
+        <header class="header">
+            <div class="header-line"></div>
+            <div class="header-content">
+                <div class="datetime" id="datetime"></div>
+                <div class="status-text">
+                    <span class="blink">●</span> SYSTEM ACTIVE
+                </div>
+            </div>
+        </header>
+
+        <!-- Main panel -->
+        <main class="main-panel">
+            <!-- Arc Reactor -->
+            <div class="reactor-section">
+                <div class="arc-reactor">
+                    <div class="reactor-ring ring-1"></div>
+                    <div class="reactor-ring ring-2"></div>
+                    <div class="reactor-ring ring-3"></div>
+                    <div class="reactor-core"></div>
+                    <div class="reactor-glow"></div>
+                </div>
+
+                <div class="title-section">
+                    <h1 class="title">A.B.E.L</h1>
+                    <p class="subtitle">AUTONOMOUS BACKEND ENTITY FOR LIVING</p>
+                    <div class="version-badge">
+                        <span class="bracket">[</span>
+                        VERSION 2.0.0 // BUILD 2024.12
+                        <span class="bracket">]</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Decorative HUD elements -->
+            <div class="hud-decoration">
+                <div class="hud-corner top-left"></div>
+                <div class="hud-corner top-right"></div>
+                <div class="hud-corner bottom-left"></div>
+                <div class="hud-corner bottom-right"></div>
+            </div>
+
+            <!-- Status section -->
+            <div class="status-section">
+                <div class="status-indicator">
+                    <div class="status-dot" id="statusDot"></div>
+                    <span class="status-label" id="statusLabel">SYSTEM OFFLINE</span>
+                </div>
+                <div class="progress-container" id="progressContainer">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+            </div>
+
+            <!-- Micro data stream -->
+            <div class="data-stream" id="dataStream"></div>
+
+            <!-- Control buttons -->
+            <div class="controls">
+                <button class="btn btn-primary" id="startBtn" onclick="startServices()">
+                    <span class="btn-icon">▶</span>
+                    <span class="btn-text">INITIALIZE</span>
+                    <span class="btn-glow"></span>
+                </button>
+                <button class="btn btn-danger" id="stopBtn" onclick="stopServices()" disabled>
+                    <span class="btn-icon">■</span>
+                    <span class="btn-text">SHUTDOWN</span>
+                    <span class="btn-glow"></span>
+                </button>
+            </div>
+
+            <!-- Quick access links -->
+            <div class="links-section">
+                <div class="section-label">// QUICK ACCESS</div>
+                <div class="links-grid">
+                    <a href="#" class="link-card" onclick="openLink('http://localhost:8000/docs')">
+                        <span class="link-icon">◈</span>
+                        <span class="link-text">API DOCS</span>
+                        <span class="link-arrow">→</span>
+                    </a>
+                    <a href="#" class="link-card" onclick="openLink('http://localhost:3000')">
+                        <span class="link-icon">◈</span>
+                        <span class="link-text">DASHBOARD</span>
+                        <span class="link-arrow">→</span>
+                    </a>
+                    <a href="#" class="link-card" onclick="openLink('http://localhost:6333/dashboard')">
+                        <span class="link-icon">◈</span>
+                        <span class="link-text">QDRANT DB</span>
+                        <span class="link-arrow">→</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- System log -->
+            <div class="log-section">
+                <div class="section-label">// SYSTEM LOG</div>
+                <div class="log-container" id="logContainer">
+                    <div class="log-entry">
+                        <span class="log-time">[--:--:--.---]</span>
+                        <span class="log-msg">AWAITING INITIALIZATION...</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-left">STARK INDUSTRIES // R&D DIVISION</div>
+            <div class="footer-center">
+                <div class="footer-dots">
+                    <span></span><span></span><span></span>
+                </div>
+            </div>
+            <div class="footer-right">CLASSIFIED // LEVEL 7 ACCESS</div>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

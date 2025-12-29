@@ -8,14 +8,39 @@ from sqlalchemy.orm import DeclarativeBase
 from app.core.config import settings
 
 
-# Create async engine
-engine = create_async_engine(
-    settings.database_url.replace("postgresql://", "postgresql+asyncpg://"),
-    echo=settings.debug,
-    pool_size=10,
-    max_overflow=20,
-    pool_pre_ping=True,
-)
+def get_database_url() -> str:
+    """Get database URL with fallback to SQLite for development."""
+    url = settings.database_url
+
+    # Default to SQLite if no URL configured or if it contains unresolved variables
+    if not url or "${" in url or url.endswith(":"):
+        return "sqlite+aiosqlite:///./abel.db"
+
+    # Convert postgresql to asyncpg if needed
+    if url.startswith("postgresql://"):
+        return url.replace("postgresql://", "postgresql+asyncpg://")
+
+    return url
+
+
+# Get the database URL
+db_url = get_database_url()
+
+# Create async engine with appropriate settings
+if db_url.startswith("sqlite"):
+    engine = create_async_engine(
+        db_url,
+        echo=settings.debug,
+        connect_args={"check_same_thread": False},
+    )
+else:
+    engine = create_async_engine(
+        db_url,
+        echo=settings.debug,
+        pool_size=10,
+        max_overflow=20,
+        pool_pre_ping=True,
+    )
 
 # Session factory
 async_session_maker = async_sessionmaker(

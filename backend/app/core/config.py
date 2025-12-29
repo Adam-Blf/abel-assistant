@@ -5,7 +5,7 @@ A.B.E.L - Configuration Settings
 from functools import lru_cache
 from typing import List
 
-from pydantic import Field
+from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -23,7 +23,7 @@ class Settings(BaseSettings):
     app_name: str = Field(default="A.B.E.L", description="Application name")
     app_env: str = Field(default="development", description="Environment")
     debug: bool = Field(default=False, description="Debug mode")
-    secret_key: str = Field(default="change-me-in-production", description="Secret key")
+    secret_key: str = Field(default="", description="Secret key")
     api_version: str = Field(default="v1", description="API version")
 
     # Server
@@ -32,7 +32,7 @@ class Settings(BaseSettings):
 
     # Database
     database_url: str = Field(
-        default="postgresql://abel:abel_secret@localhost:5432/abel_db",
+        default="",
         description="PostgreSQL connection URL",
     )
 
@@ -99,6 +99,24 @@ class Settings(BaseSettings):
     @property
     def is_development(self) -> bool:
         return self.app_env == "development"
+
+    @field_validator("secret_key")
+    @classmethod
+    def validate_secret_key(cls, v: str, info) -> str:
+        """Validate secret key is set in production."""
+        if info.data.get("app_env") == "production" and not v:
+            raise ValueError("SECRET_KEY must be set in production environment")
+        if info.data.get("app_env") == "production" and len(v) < 32:
+            raise ValueError("SECRET_KEY must be at least 32 characters in production")
+        return v
+
+    @field_validator("database_url")
+    @classmethod
+    def validate_database_url(cls, v: str, info) -> str:
+        """Validate database URL is set in production."""
+        if info.data.get("app_env") == "production" and not v:
+            raise ValueError("DATABASE_URL must be set in production environment")
+        return v
 
 
 @lru_cache

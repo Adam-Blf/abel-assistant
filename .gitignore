@@ -2,11 +2,14 @@
 # A.B.E.L - Git Ignore
 # ===========================================
 
-# Environment
+# Environment (NEVER COMMIT)
 .env
 .env.local
 .env.*.local
 *.env
+backend/.env
+**/secrets.json
+**/credentials.json
 
 # Python
 __pycache__/
@@ -112,7 +115,12 @@ secrets/
 *.exe
 *.msi
 *.dmg
-abel.spec
+*.spec
+nul
+
+# Rust/Tauri build
+**/target/
+Cargo.lock
 
 # Celery
 celerybeat-schedule

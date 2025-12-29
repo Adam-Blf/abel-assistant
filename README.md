@@ -50,8 +50,8 @@ A.B.E.L/
 │   │       ├── entertainment/ # Musique, Films, Anime, Jeux
 │   │       ├── finance/       # Crypto, Actions, Devises
 │   │       ├── google/        # Suite Google complete
-│   │       └── utilities/     # Meteo, News, Traduction
-│   ├── tests/
+│   │       └── utilities/     # Meteo, News, Traduction, QR, URL
+│   ├── scripts/               # Scripts de demarrage
 │   └── pyproject.toml
 ├── frontend/                   # Next.js 14 Dashboard
 │   ├── app/
@@ -99,7 +99,9 @@ A.B.E.L/
 | Meteo | OpenWeatherMap, Open-Meteo |
 | News | NewsAPI, Hacker News, Reddit |
 | Traduction | MyMemory, Lingva, LibreTranslate |
-| Outils | QR Code, URL Shortener, Password Generator |
+| QR Code | QRServer, GoQR |
+| URL Shortener | CleanURI, TinyURL, is.gd |
+| Outils | Password Generator, Hash, UUID |
 
 ---
 
@@ -137,6 +139,16 @@ docker-compose up -d
 
 # Verifier les logs
 docker-compose logs -f
+```
+
+### Alternative: Scripts de demarrage
+
+```bash
+# Linux/Mac
+./scripts/start.sh
+
+# Windows
+scripts\start.bat
 ```
 
 ### 4. Acceder a l'application
@@ -197,17 +209,24 @@ POST /api/chat
   "context": "productivity"
 }
 
-# Recherche musique Deezer
+# Entertainment
 GET /api/entertainment/music/search?q=artist_name
+GET /api/entertainment/movies/popular
+GET /api/entertainment/anime/top
+GET /api/entertainment/games/popular
 
-# Obtenir prix crypto
-GET /api/finance/crypto/price/bitcoin
+# Finance
+GET /api/finance/crypto/{coin_id}
+GET /api/finance/crypto/{coin_id}/history
+GET /api/finance/stocks/{symbol}
+GET /api/finance/currency/convert?from=USD&to=EUR&amount=100
 
-# Meteo
+# Utilities
 GET /api/utilities/weather?city=Paris
-
-# Actualites tech
-GET /api/utilities/news/tech
+GET /api/utilities/news/top
+GET /api/utilities/translate?text=Hello&target=fr
+POST /api/utilities/qr/generate
+GET /api/utilities/url/shorten?url=https://example.com
 ```
 
 ### WebSocket Chat
@@ -432,6 +451,43 @@ git push origin feature/amazing-feature
 
 # Ouvrir une Pull Request
 ```
+
+---
+
+## Securite
+
+A.B.E.L integre de nombreuses protections de securite pour garantir la confidentialite et l'integrite de vos donnees.
+
+### Corrections de Securite Recentes (2025-12-29)
+
+- Messages d'erreur generiques pour prevenir l'exposition d'informations sensibles
+- Desactivation automatique de la documentation API en production
+- Security headers (X-Frame-Options, CSP, etc.)
+- Validation obligatoire des secrets en production
+- Authentification optionnelle/obligatoire avec JWT
+
+Pour plus de details, consultez:
+- [SECURITY_FIXES.md](SECURITY_FIXES.md) - Details complets des corrections
+- [SECURITY_CHECKLIST.md](SECURITY_CHECKLIST.md) - Checklist de securite
+- [SECURE_DEPLOYMENT.md](SECURE_DEPLOYMENT.md) - Guide de deploiement securise
+
+### Validation de Securite
+
+```bash
+cd backend
+python scripts/validate_security.py
+```
+
+Tous les tests doivent PASS avant le deploiement en production.
+
+### Bonnes Pratiques
+
+1. Ne jamais commiter le fichier .env
+2. Utiliser des secrets uniques pour chaque environnement
+3. Generer SECRET_KEY avec au moins 32 caracteres aleatoires
+4. Activer HTTPS en production
+5. Limiter CORS aux domaines strictement necessaires
+6. Effectuer des audits reguliers de securite
 
 ---
 

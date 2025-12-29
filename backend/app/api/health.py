@@ -49,7 +49,7 @@ async def detailed_health_check(
         services["database"] = {"status": "healthy", "latency_ms": round(latency, 2)}
     except Exception as e:
         logger.error(f"Database health check failed: {e}")
-        services["database"] = {"status": "unhealthy", "error": str(e)}
+        services["database"] = {"status": "unhealthy", "error": "Database unavailable"}
 
     # Check Redis
     try:
@@ -59,7 +59,7 @@ async def detailed_health_check(
         services["redis"] = {"status": "healthy", "latency_ms": round(latency, 2)}
     except Exception as e:
         logger.error(f"Redis health check failed: {e}")
-        services["redis"] = {"status": "unhealthy", "error": str(e)}
+        services["redis"] = {"status": "unhealthy", "error": "Redis unavailable"}
 
     # Check Qdrant
     try:
@@ -72,7 +72,7 @@ async def detailed_health_check(
         services["qdrant"] = {"status": "healthy", "latency_ms": round(latency, 2)}
     except Exception as e:
         logger.error(f"Qdrant health check failed: {e}")
-        services["qdrant"] = {"status": "unhealthy", "error": str(e)}
+        services["qdrant"] = {"status": "unhealthy", "error": "Qdrant unavailable"}
 
     # Determine overall status
     all_healthy = all(s["status"] == "healthy" for s in services.values())
