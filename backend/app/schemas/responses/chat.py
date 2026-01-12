@@ -25,6 +25,9 @@ class ChatResponse(BaseModel):
         default_factory=datetime.utcnow, description="Response timestamp"
     )
     model: str = Field(..., description="Model used for generation")
+    context_used: bool = Field(
+        default=False, description="Whether personal context was used (RAG)"
+    )
 
     model_config = {
         "json_schema_extra": {
@@ -33,6 +36,7 @@ class ChatResponse(BaseModel):
                 "role": "assistant",
                 "timestamp": "2026-01-12T10:30:00Z",
                 "model": "gemini-1.5-flash",
+                "context_used": True,
             }
         }
     }

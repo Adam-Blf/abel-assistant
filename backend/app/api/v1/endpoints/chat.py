@@ -2,21 +2,25 @@
 ===============================================================================
 CHAT.PY - Chat API Endpoints
 ===============================================================================
-A.B.E.L. Project - Chat Endpoints with Gemini Integration
-Rate limited and validated
+A.B.E.L. Project - Chat Endpoints with Gemini + RAG Integration
+Personalized responses using user memories
 ===============================================================================
 """
 
 import logging
 from datetime import datetime
+from typing import Optional
 
 from fastapi import APIRouter, Depends, Request
 
 from app.config.settings import Settings, get_settings
+from app.core.security.auth import get_optional_user
 from app.core.security.rate_limiter import limiter
 from app.schemas.requests.chat import ChatRequest
 from app.schemas.responses.chat import ChatResponse
 from app.services.gemini.client import GeminiClient, get_gemini_client
+from app.services.memory.rag import get_rag_pipeline
+from app.services.supabase.auth import AuthUser
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/chat", tags=["Chat"])
@@ -27,22 +31,27 @@ router = APIRouter(prefix="/chat", tags=["Chat"])
 async def send_message(
     request: Request,
     chat_request: ChatRequest,
+    current_user: Optional[AuthUser] = Depends(get_optional_user),
     gemini: GeminiClient = Depends(get_gemini_client),
     settings: Settings = Depends(get_settings),
 ) -> ChatResponse:
     """
-    Send a message to A.B.E.L. and receive a response.
+    Send a message to A.B.E.L. and receive a personalized response.
+
+    If authenticated, A.B.E.L. uses your memories to personalize responses
+    and learns from the conversation.
 
     Rate limited to 30 requests per minute.
 
     Args:
         request: FastAPI request (for rate limiting)
         chat_request: Validated chat request
+        current_user: Optional authenticated user
         gemini: Gemini client instance
         settings: Application settings
 
     Returns:
-        ChatResponse with AI-generated message
+        ChatResponse with AI-generated personalized message
     """
     logger.info(f"Chat request received: {len(chat_request.message)} chars")
 
@@ -54,7 +63,37 @@ async def send_message(
             for msg in chat_request.history
         ]
 
-    # Generate response
+    # If user is authenticated, use RAG for personalized response
+    if current_user:
+        logger.info(f"Using RAG for authenticated user: {current_user.id}")
+        rag = get_rag_pipeline()
+
+        try:
+            rag_response = await rag.generate_with_context(
+                user_id=current_user.id,
+                message=chat_request.message,
+                history=history,
+            )
+
+            # Log new learnings
+            if rag_response.new_learnings:
+                logger.info(
+                    f"Extracted {len(rag_response.new_learnings)} new learnings"
+                )
+
+            return ChatResponse(
+                message=rag_response.response,
+                role="assistant",
+                timestamp=datetime.utcnow(),
+                model=settings.gemini_model_chat,
+                context_used=len(rag_response.context_used) > 0,
+            )
+
+        except Exception as e:
+            logger.warning(f"RAG failed, falling back to standard: {e}")
+            # Fall through to standard generation
+
+    # Standard generation (no personalization)
     response_text = await gemini.generate_response(
         prompt=chat_request.message,
         history=history,
@@ -68,6 +107,7 @@ async def send_message(
         role="assistant",
         timestamp=datetime.utcnow(),
         model=settings.gemini_model_chat,
+        context_used=False,
     )
 
 
