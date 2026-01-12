@@ -1,0 +1,67 @@
+{
+  "expo": {
+    "name": "A.B.E.L.",
+    "slug": "abel-assistant",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "abel",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0a0a0f"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.abel.assistant",
+      "infoPlist": {
+        "NSCameraUsageDescription": "A.B.E.L. utilise la caméra pour la fonctionnalité Vision IA",
+        "NSMicrophoneUsageDescription": "A.B.E.L. utilise le microphone pour la reconnaissance vocale",
+        "NSFaceIDUsageDescription": "A.B.E.L. utilise Face ID pour sécuriser votre session",
+        "NSSpeechRecognitionUsageDescription": "A.B.E.L. utilise la reconnaissance vocale pour les commandes"
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0a0a0f"
+      },
+      "package": "com.abel.assistant",
+      "permissions": [
+        "CAMERA",
+        "RECORD_AUDIO",
+        "USE_BIOMETRIC",
+        "USE_FINGERPRINT"
+      ]
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      "expo-local-authentication",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "A.B.E.L. a besoin d'accéder à votre caméra pour la Vision IA"
+        }
+      ],
+      [
+        "expo-av",
+        {
+          "microphonePermission": "A.B.E.L. a besoin d'accéder au microphone pour les commandes vocales"
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
