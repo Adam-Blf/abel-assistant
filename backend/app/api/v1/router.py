@@ -9,7 +9,7 @@ Aggregates all v1 endpoint routers
 
 from fastapi import APIRouter
 
-from app.api.v1.endpoints import auth, chat, health, memory, vision, voice
+from app.api.v1.endpoints import auth, chat, health, memory, vision, voice, tools
 
 # Create main API router
 api_router = APIRouter()
@@ -21,6 +21,4 @@ api_router.include_router(chat.router)
 api_router.include_router(memory.router)
 api_router.include_router(voice.router)
 api_router.include_router(vision.router)
-
-# Future routers:
-# api_router.include_router(tools.router)
+api_router.include_router(tools.router)

@@ -50,6 +50,11 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     logger.info(f"Environment: {settings.app_env}")
     logger.info(f"Debug mode: {settings.debug}")
 
+    # Initialize external tools
+    from app.services.tools import initialize_tools
+    initialize_tools()
+    logger.info("External tools initialized")
+
     yield
 
     # Shutdown
