@@ -183,8 +183,9 @@ async def readiness_check() -> dict:
 # =============================================================================
 
 # Import and register API routers
-# from app.api.v1.router import api_router
-# app.include_router(api_router, prefix="/api/v1")
+from app.api.v1.router import api_router
+
+app.include_router(api_router, prefix="/api/v1")
 
 
 # =============================================================================
