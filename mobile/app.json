@@ -19,11 +19,26 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.abel.assistant",
+      "buildNumber": "1",
       "infoPlist": {
         "NSCameraUsageDescription": "A.B.E.L. utilise la caméra pour la fonctionnalité Vision IA",
         "NSMicrophoneUsageDescription": "A.B.E.L. utilise le microphone pour la reconnaissance vocale",
         "NSFaceIDUsageDescription": "A.B.E.L. utilise Face ID pour sécuriser votre session",
-        "NSSpeechRecognitionUsageDescription": "A.B.E.L. utilise la reconnaissance vocale pour les commandes"
+        "NSSpeechRecognitionUsageDescription": "A.B.E.L. utilise la reconnaissance vocale pour les commandes",
+        "NSPhotoLibraryUsageDescription": "A.B.E.L. utilise votre galerie pour analyser des images avec Vision IA",
+        "ITSAppUsesNonExemptEncryption": false,
+        "UIBackgroundModes": []
+      },
+      "config": {
+        "usesNonExemptEncryption": false
+      },
+      "privacyManifests": {
+        "NSPrivacyAccessedAPITypes": [
+          {
+            "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategoryUserDefaults",
+            "NSPrivacyAccessedAPITypeReasons": ["CA92.1"]
+          }
+        ]
       }
     },
     "android": {
@@ -32,11 +47,20 @@
         "backgroundColor": "#0a0a0f"
       },
       "package": "com.abel.assistant",
+      "versionCode": 1,
       "permissions": [
         "CAMERA",
         "RECORD_AUDIO",
         "USE_BIOMETRIC",
-        "USE_FINGERPRINT"
+        "USE_FINGERPRINT",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "INTERNET",
+        "ACCESS_NETWORK_STATE"
+      ],
+      "blockedPermissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION"
       ]
     },
     "web": {
@@ -59,10 +83,28 @@
         {
           "microphonePermission": "A.B.E.L. a besoin d'accéder au microphone pour les commandes vocales"
         }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "A.B.E.L. a besoin d'accéder à vos photos pour la Vision IA"
+        }
       ]
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "abel-assistant-project-id"
+      }
+    },
+    "owner": "adam-blf",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/abel-assistant-project-id"
     }
   }
 }
