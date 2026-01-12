@@ -1,0 +1,52 @@
+[tool.poetry]
+name = "abel-backend"
+version = "1.0.0"
+description = "A.B.E.L. - Assistant IA Backend API"
+authors = ["Adam-Blf"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.115.0"
+uvicorn = {extras = ["standard"], version = "^0.32.0"}
+pydantic = "^2.10.0"
+pydantic-settings = "^2.6.0"
+python-multipart = "^0.0.17"
+google-generativeai = "^0.8.0"
+supabase = "^2.10.0"
+httpx = "^0.28.0"
+slowapi = "^0.1.9"
+python-jose = {extras = ["cryptography"], version = "^3.3.0"}
+passlib = {extras = ["bcrypt"], version = "^1.7.4"}
+redis = "^5.2.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.0"
+pytest-asyncio = "^0.24.0"
+pytest-cov = "^6.0.0"
+ruff = "^0.8.0"
+mypy = "^1.13.0"
+bandit = "^1.7.0"
+httpx = "^0.28.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "S", "B", "C4", "UP"]
+ignore = ["S101"]  # Allow assert in tests
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
