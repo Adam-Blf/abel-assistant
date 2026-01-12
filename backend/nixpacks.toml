@@ -1,0 +1,12 @@
+# Nixpacks configuration for Railway deployment
+[phases.setup]
+nixPkgs = ["python311", "poetry"]
+
+[phases.install]
+cmds = ["poetry config virtualenvs.create false", "poetry install --only main --no-interaction"]
+
+[start]
+cmd = "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"
+
+[variables]
+PYTHON_VERSION = "3.11"

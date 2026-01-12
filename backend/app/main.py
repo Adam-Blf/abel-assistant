@@ -64,9 +64,9 @@ app = FastAPI(
     title=f"{settings.app_name} API",
     description="A.B.E.L. - Assistant IA Mobile Backend API",
     version="1.0.0",
-    docs_url="/docs" if settings.debug else None,
-    redoc_url="/redoc" if settings.debug else None,
-    openapi_url="/openapi.json" if settings.debug else None,
+    docs_url="/docs",
+    redoc_url="/redoc",
+    openapi_url="/openapi.json",
     lifespan=lifespan,
 )
 

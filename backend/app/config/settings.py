@@ -50,8 +50,9 @@ class Settings(BaseSettings):
     jwt_expiry_minutes: int = 30
     session_timeout_minutes: int = 15
 
-    cors_origins: str = "http://localhost:8081"
-    trusted_hosts: str = "localhost,127.0.0.1"
+    # For mobile apps, use "*" in production or specific domains
+    cors_origins: str = "*"
+    trusted_hosts: str = "*"
 
     rate_limit_enabled: bool = True
 
