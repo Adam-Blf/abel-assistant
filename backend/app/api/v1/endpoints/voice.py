@@ -9,7 +9,7 @@ A.B.E.L. Project - Speech-to-Text and Voice Commands
 import logging
 from typing import Optional
 
-from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, UploadFile
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
@@ -41,6 +41,7 @@ MAX_AUDIO_SIZE = 10 * 1024 * 1024  # 10 MB
 @router.post("/transcribe")
 @limiter.limit("10/minute")
 async def transcribe_audio(
+    request: Request,
     audio: UploadFile = File(..., description="Audio file to transcribe"),
     current_user: dict = Depends(get_current_user),
 ):
@@ -90,6 +91,7 @@ async def transcribe_audio(
 @router.post("/command")
 @limiter.limit("10/minute")
 async def process_voice_command(
+    request: Request,
     audio: UploadFile = File(..., description="Audio command"),
     use_memory: bool = Form(default=True, description="Use personal memory"),
     current_user: Optional[dict] = Depends(get_optional_user),
@@ -180,6 +182,7 @@ async def process_voice_command(
 @router.post("/speak")
 @limiter.limit("20/minute")
 async def prepare_speech(
+    request: Request,
     text: str = Form(..., min_length=1, max_length=1000),
     style: str = Form(default="friendly", pattern="^(friendly|formal|excited)$"),
     current_user: dict = Depends(get_current_user),

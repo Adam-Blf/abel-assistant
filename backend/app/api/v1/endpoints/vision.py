@@ -9,7 +9,7 @@ A.B.E.L. Project - Image Analysis and Understanding
 import logging
 from typing import Optional
 
-from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, UploadFile
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
@@ -39,6 +39,7 @@ MAX_IMAGE_SIZE = 20 * 1024 * 1024  # 20 MB
 @router.post("/analyze")
 @limiter.limit("5/minute")
 async def analyze_image(
+    request: Request,
     image: UploadFile = File(..., description="Image to analyze"),
     question: Optional[str] = Form(default=None, description="Question about the image"),
     current_user: Optional[dict] = Depends(get_optional_user),
@@ -105,6 +106,7 @@ async def analyze_image(
 @router.post("/ocr")
 @limiter.limit("10/minute")
 async def extract_text(
+    request: Request,
     image: UploadFile = File(..., description="Image containing text"),
     current_user: dict = Depends(get_current_user),
 ):
@@ -152,6 +154,7 @@ async def extract_text(
 @router.post("/objects")
 @limiter.limit("5/minute")
 async def identify_objects(
+    request: Request,
     image: UploadFile = File(..., description="Image to analyze"),
     current_user: dict = Depends(get_current_user),
 ):
@@ -199,6 +202,7 @@ async def identify_objects(
 @router.post("/compare")
 @limiter.limit("3/minute")
 async def compare_images(
+    request: Request,
     image1: UploadFile = File(..., description="First image"),
     image2: UploadFile = File(..., description="Second image"),
     current_user: dict = Depends(get_current_user),

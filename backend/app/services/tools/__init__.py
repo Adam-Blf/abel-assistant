@@ -18,10 +18,43 @@ from app.services.tools.web_search import web_search, quick_answer, register_sea
 
 
 def initialize_tools():
-    """Initialize and register all tools"""
-    register_weather_tool()
-    register_news_tool()
-    register_search_tool()
+    """
+    Initialize and register all tools.
+    Never crashes - catches all errors and continues.
+    """
+    import logging
+    logger = logging.getLogger(__name__)
+
+    tools_initialized = []
+    tools_failed = []
+
+    # Weather tool
+    try:
+        register_weather_tool()
+        tools_initialized.append("weather")
+    except Exception as e:
+        logger.error(f"Failed to initialize weather tool: {e}")
+        tools_failed.append("weather")
+
+    # News tool
+    try:
+        register_news_tool()
+        tools_initialized.append("news")
+    except Exception as e:
+        logger.error(f"Failed to initialize news tool: {e}")
+        tools_failed.append("news")
+
+    # Search tool
+    try:
+        register_search_tool()
+        tools_initialized.append("search")
+    except Exception as e:
+        logger.error(f"Failed to initialize search tool: {e}")
+        tools_failed.append("search")
+
+    logger.info(f"Tools initialized: {tools_initialized}")
+    if tools_failed:
+        logger.warning(f"Tools failed: {tools_failed}")
 
 
 __all__ = [

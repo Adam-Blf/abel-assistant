@@ -62,13 +62,31 @@ class AuthService:
     def __init__(self):
         """Initialize auth service."""
         self._client: Optional[Client] = None
+        self._supabase_client = None
+
+    @property
+    def is_available(self) -> bool:
+        """Check if auth service is available."""
+        if self._supabase_client is None:
+            self._supabase_client = get_supabase_client()
+        return self._supabase_client.is_available
 
     @property
     def client(self) -> Client:
         """Get Supabase client."""
         if self._client is None:
-            self._client = get_supabase_client().client
+            self._supabase_client = get_supabase_client()
+            self._client = self._supabase_client.client
         return self._client
+
+    def _check_availability(self):
+        """Check if auth service is available, raise error if not."""
+        if not self.is_available:
+            raise ABELException(
+                status_code=503,
+                error_code="SERVICE_UNAVAILABLE",
+                message="Authentication service is temporarily unavailable. Please try again later.",
+            )
 
     async def register(
         self,
@@ -90,6 +108,8 @@ class AuthService:
         Raises:
             ABELException: If registration fails
         """
+        self._check_availability()
+
         try:
             # Build user metadata
             metadata = {}
@@ -168,6 +188,8 @@ class AuthService:
         Raises:
             ABELException: If login fails
         """
+        self._check_availability()
+
         try:
             response = self.client.auth.sign_in_with_password(
                 {"email": email, "password": password}

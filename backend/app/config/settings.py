@@ -45,7 +45,7 @@ class Settings(BaseSettings):
     # -------------------------------------------------------------------------
     # SECURITY (CRITICAL)
     # -------------------------------------------------------------------------
-    secret_key: SecretStr = Field(..., min_length=32)
+    secret_key: SecretStr = Field(default=SecretStr("dev-secret-key-CHANGE-IN-PRODUCTION-min32chars"))
     jwt_algorithm: str = "HS256"
     jwt_expiry_minutes: int = 30
     session_timeout_minutes: int = 15
@@ -69,6 +69,11 @@ class Settings(BaseSettings):
     gemini_api_key: SecretStr = SecretStr("")
     gemini_model_chat: str = "gemini-1.5-flash"
     gemini_model_vision: str = "gemini-1.5-pro"
+
+    # -------------------------------------------------------------------------
+    # RESILIENCE
+    # -------------------------------------------------------------------------
+    allow_mock_mode: bool = True  # Allow services to run in mock mode if unavailable
 
     # -------------------------------------------------------------------------
     # EXTERNAL APIS
@@ -109,8 +114,15 @@ class Settings(BaseSettings):
     @classmethod
     def validate_secret_key(cls, v: SecretStr) -> SecretStr:
         """Ensure secret key is strong enough."""
-        if len(v.get_secret_value()) < 32:
+        secret_value = v.get_secret_value()
+        if len(secret_value) < 32:
             raise ValueError("SECRET_KEY must be at least 32 characters")
+
+        # Warn about default development key
+        if secret_value == "dev-secret-key-CHANGE-IN-PRODUCTION-min32chars":
+            import logging
+            logging.warning("Using default development SECRET_KEY - CHANGE IN PRODUCTION!")
+
         return v
 
 
@@ -121,5 +133,25 @@ def get_settings() -> Settings:
 
     Returns:
         Settings: Application settings
+
+    Note:
+        If critical environment variables are missing,
+        defaults will be used in development mode.
     """
-    return Settings()
+    import logging
+
+    try:
+        return Settings()
+    except Exception as e:
+        # Log the error but provide a basic configuration
+        logging.error(f"Failed to load settings: {e}")
+        logging.warning("Using minimal default settings - some features may not work")
+
+        # Try to create settings with minimal defaults
+        try:
+            import os
+            os.environ.setdefault("SECRET_KEY", "dev-secret-key-CHANGE-IN-PRODUCTION-min32chars")
+            return Settings()
+        except Exception as e2:
+            logging.critical(f"Cannot create settings even with defaults: {e2}")
+            raise

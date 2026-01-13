@@ -26,35 +26,64 @@ class GeminiClient:
 
     Provides secure, configured access to Gemini models
     with proper error handling and safety settings.
+
+    Falls back to mock mode if API key is missing.
     """
 
     def __init__(self) -> None:
         """Initialize Gemini client with API key from settings."""
-        api_key = settings.gemini_api_key.get_secret_value()
-        if not api_key:
-            raise GeminiError("Gemini API key not configured")
+        self._mock_mode = False
+        self._initialization_error: str | None = None
 
-        genai.configure(api_key=api_key)
+        try:
+            api_key = settings.gemini_api_key.get_secret_value()
+            if not api_key:
+                raise ValueError("Gemini API key not configured")
 
-        # Safety settings - block harmful content
-        self.safety_settings = {
-            HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-            HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-            HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-            HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-        }
+            genai.configure(api_key=api_key)
 
-        # Default generation config
-        self.default_generation_config = GenerationConfig(
-            temperature=0.7,
-            top_p=0.95,
-            top_k=40,
-            max_output_tokens=2048,
-        )
+            # Safety settings - block harmful content
+            self.safety_settings = {
+                HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+                HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+                HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+                HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+            }
 
-        # Initialize models
-        self._chat_model = None
-        self._vision_model = None
+            # Default generation config
+            self.default_generation_config = GenerationConfig(
+                temperature=0.7,
+                top_p=0.95,
+                top_k=40,
+                max_output_tokens=2048,
+            )
+
+            # Initialize models
+            self._chat_model = None
+            self._vision_model = None
+
+            logger.info("Gemini client initialized successfully")
+
+        except Exception as e:
+            self._initialization_error = str(e)
+            logger.error(f"Failed to initialize Gemini client: {e}")
+
+            if settings.allow_mock_mode:
+                logger.warning("Entering Gemini MOCK MODE - AI features will return mock responses")
+                self._mock_mode = True
+
+                # Set mock defaults
+                self.safety_settings = {}
+                self.default_generation_config = None  # type: ignore
+                self._chat_model = None
+                self._vision_model = None
+            else:
+                raise GeminiError(f"Gemini API key not configured: {e}")
+
+    @property
+    def is_available(self) -> bool:
+        """Check if Gemini client is available (not in mock mode)."""
+        return not self._mock_mode
 
     @property
     def chat_model(self) -> genai.GenerativeModel:
@@ -98,6 +127,10 @@ class GeminiClient:
         Raises:
             GeminiError: If generation fails
         """
+        if self._mock_mode:
+            logger.warning("Gemini in mock mode - returning mock response")
+            return f"[MOCK RESPONSE] I received your message: '{prompt[:50]}...' (Gemini API not configured)"
+
         try:
             # Create model with system instruction if provided
             model = self.chat_model
@@ -144,6 +177,10 @@ class GeminiClient:
         Raises:
             GeminiError: If analysis fails
         """
+        if self._mock_mode:
+            logger.warning("Gemini in mock mode - returning mock vision response")
+            return "[MOCK RESPONSE] Image analysis not available (Gemini API not configured)"
+
         try:
             # Create image part
             image_part = {

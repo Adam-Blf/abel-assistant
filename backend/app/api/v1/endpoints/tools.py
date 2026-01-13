@@ -6,7 +6,7 @@ A.B.E.L. Project - External Tools API (Weather, News, Search)
 =============================================================================
 """
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from typing import Optional, Dict, Any, List
 from pydantic import BaseModel, Field
 
@@ -65,6 +65,7 @@ class ToolResponse(BaseModel):
 @router.get("/available", response_model=Dict[str, Any])
 @limiter.limit("60/minute")
 async def list_available_tools(
+    request: Request,
     current_user: dict = Depends(get_current_user)
 ):
     """
@@ -93,6 +94,7 @@ async def list_available_tools(
 @router.post("/execute", response_model=ToolResponse)
 @limiter.limit("30/minute")
 async def execute_tool(
+    http_request: Request,
     request: ToolExecuteRequest,
     current_user: dict = Depends(get_current_user)
 ):
@@ -113,6 +115,7 @@ async def execute_tool(
 @router.get("/gemini-functions", response_model=List[Dict[str, Any]])
 @limiter.limit("60/minute")
 async def get_gemini_function_declarations(
+    request: Request,
     current_user: dict = Depends(get_current_user)
 ):
     """
@@ -131,6 +134,7 @@ async def get_gemini_function_declarations(
 @router.get("/weather", response_model=ToolResponse)
 @limiter.limit("30/minute")
 async def get_weather_endpoint(
+    request: Request,
     city: str = Query(..., min_length=1, description="City name"),
     latitude: Optional[float] = Query(None, description="Custom latitude"),
     longitude: Optional[float] = Query(None, description="Custom longitude"),
@@ -152,6 +156,7 @@ async def get_weather_endpoint(
 @router.post("/weather", response_model=ToolResponse)
 @limiter.limit("30/minute")
 async def post_weather_endpoint(
+    http_request: Request,
     request: WeatherRequest,
     current_user: dict = Depends(get_current_user)
 ):
@@ -173,6 +178,7 @@ async def post_weather_endpoint(
 @router.get("/news", response_model=ToolResponse)
 @limiter.limit("20/minute")
 async def get_news_endpoint(
+    request: Request,
     category: str = Query("france", description="News category"),
     source: Optional[str] = Query(None, description="Specific source"),
     limit: int = Query(5, ge=1, le=10, description="Number of articles"),
@@ -196,6 +202,7 @@ async def get_news_endpoint(
 @router.post("/news", response_model=ToolResponse)
 @limiter.limit("20/minute")
 async def post_news_endpoint(
+    http_request: Request,
     request: NewsRequest,
     current_user: dict = Depends(get_current_user)
 ):
@@ -213,6 +220,7 @@ async def post_news_endpoint(
 @router.get("/headlines", response_model=ToolResponse)
 @limiter.limit("10/minute")
 async def get_headlines_endpoint(
+    request: Request,
     limit: int = Query(5, ge=1, le=5, description="Articles per category"),
     current_user: dict = Depends(get_current_user)
 ):
@@ -233,6 +241,7 @@ async def get_headlines_endpoint(
 @router.get("/search", response_model=ToolResponse)
 @limiter.limit("20/minute")
 async def search_endpoint(
+    request: Request,
     query: str = Query(..., min_length=2, description="Search query"),
     limit: int = Query(5, ge=1, le=10, description="Number of results"),
     region: str = Query("fr-fr", description="Region code"),
@@ -254,6 +263,7 @@ async def search_endpoint(
 @router.post("/search", response_model=ToolResponse)
 @limiter.limit("20/minute")
 async def post_search_endpoint(
+    http_request: Request,
     request: SearchRequest,
     current_user: dict = Depends(get_current_user)
 ):
@@ -271,6 +281,7 @@ async def post_search_endpoint(
 @router.get("/answer", response_model=ToolResponse)
 @limiter.limit("30/minute")
 async def quick_answer_endpoint(
+    request: Request,
     query: str = Query(..., min_length=2, description="Question or query"),
     current_user: dict = Depends(get_current_user)
 ):

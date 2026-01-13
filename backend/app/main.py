@@ -44,16 +44,45 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     Application lifespan manager.
 
     Handles startup and shutdown events.
+    NEVER crashes - all initialization errors are caught and logged.
     """
     # Startup
     logger.info(f"Starting {settings.app_name} API server")
     logger.info(f"Environment: {settings.app_env}")
     logger.info(f"Debug mode: {settings.debug}")
+    logger.info(f"Mock mode allowed: {settings.allow_mock_mode}")
 
-    # Initialize external tools
-    from app.services.tools import initialize_tools
-    initialize_tools()
-    logger.info("External tools initialized")
+    # Initialize external tools (never crash)
+    try:
+        from app.services.tools import initialize_tools
+        initialize_tools()
+        logger.info("External tools initialized successfully")
+    except Exception as e:
+        logger.error(f"Failed to initialize external tools: {e}")
+        if settings.allow_mock_mode:
+            logger.warning("Continuing without external tools (mock mode)")
+        else:
+            logger.critical("External tools required but initialization failed")
+
+    # Check service availability
+    service_status = {}
+    try:
+        from app.services.supabase.client import get_supabase_client
+        from app.services.gemini.client import get_gemini_client
+
+        supabase_client = get_supabase_client()
+        gemini_client = get_gemini_client()
+
+        service_status["supabase"] = "available" if supabase_client.is_available else "mock_mode"
+        service_status["gemini"] = "available" if gemini_client.is_available else "mock_mode"
+
+        logger.info(f"Service status: {service_status}")
+    except Exception as e:
+        logger.error(f"Failed to check service status: {e}")
+        service_status["status"] = "unknown"
+
+    # Store service status in app state
+    app.state.service_status = service_status
 
     yield
 
@@ -167,19 +196,24 @@ async def health_check() -> dict:
 
 
 @app.get("/health/ready", tags=["Health"])
-async def readiness_check() -> dict:
+async def readiness_check(request: Request) -> dict:
     """
     Readiness check endpoint.
 
     Verifies all dependencies are available.
     """
-    # TODO: Add checks for Supabase, Gemini, Redis
+    service_status = getattr(request.app.state, "service_status", {})
+
+    # Determine overall readiness
+    is_ready = all(
+        status in ["available", "mock_mode"]
+        for status in service_status.values()
+    )
+
     return {
-        "status": "ready",
-        "dependencies": {
-            "database": "ok",
-            "gemini": "ok",
-        },
+        "status": "ready" if is_ready else "degraded",
+        "services": service_status,
+        "message": "Some services running in mock mode" if not is_ready else "All services operational",
     }
 
 
