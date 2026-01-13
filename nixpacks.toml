@@ -1,0 +1,14 @@
+# =============================================================================
+# NIXPACKS.TOML - Root Nixpacks Configuration
+# =============================================================================
+# A.B.E.L. Project - Configure Nixpacks for backend deployment
+# =============================================================================
+
+[phases.setup]
+nixPkgs = ["python311", "gcc"]
+
+[phases.install]
+cmds = ["cd backend && pip install poetry && poetry config virtualenvs.create false && poetry install --only main"]
+
+[start]
+cmd = "cd backend && gunicorn app.main:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT"
