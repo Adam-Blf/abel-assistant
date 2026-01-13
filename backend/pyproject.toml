@@ -5,6 +5,7 @@ description = "A.B.E.L. - Assistant IA Backend API"
 authors = ["Adam-Blf"]
 license = "MIT"
 readme = "README.md"
+packages = [{include = "app"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
@@ -20,6 +21,7 @@ slowapi = "^0.1.9"
 python-jose = {extras = ["cryptography"], version = "^3.3.0"}
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 redis = "^5.2.0"
+gunicorn = "^23.0.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.0"
