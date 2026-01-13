@@ -1,12 +1,12 @@
 # Nixpacks configuration for Railway deployment
 [phases.setup]
-nixPkgs = ["python311", "poetry"]
+nixPkgs = ["python311", "poetry", "gcc"]
 
 [phases.install]
 cmds = ["poetry config virtualenvs.create false", "poetry install --only main --no-interaction"]
 
-[start]
-cmd = "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"
+[phases.build]
+cmds = []
 
-[variables]
-PYTHON_VERSION = "3.11"
+[start]
+cmd = "gunicorn app.main:app --workers 2 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT"
